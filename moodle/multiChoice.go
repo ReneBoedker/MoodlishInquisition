@@ -6,6 +6,8 @@ import (
 	"io"
 )
 
+var _ Question = (*Numerical)(nil) // Ensure interface is satisfied
+
 // MultiChoice implements the 'Multiple choice' question type.
 type MultiChoice struct {
 	name    string

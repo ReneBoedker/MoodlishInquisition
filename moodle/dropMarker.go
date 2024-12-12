@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+var _ Question = (*DropMarker)(nil) // Ensure interface is satisfied
+
 // Mark describes markers in the 'Drag and drop markers' question type.
 type Mark struct {
 	nDrags uint

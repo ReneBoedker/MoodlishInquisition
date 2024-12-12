@@ -6,6 +6,8 @@ import (
 	"io"
 )
 
+var _ Question = (*DropText)(nil) // Ensure interface is satisfied
+
 // TextMark describes markers in the 'Drag and drop into text' question type.
 type TextMark struct {
 	text      string
