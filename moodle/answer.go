@@ -34,7 +34,7 @@ func NewAnswerWithFeedback(response string, grade float64, feedback string) *Ans
 	}
 }
 
-// SetOptions allows setting additional options for answers.
+// SetOption allows setting additional options for answers.
 // For instance, one may use this to set 'tolerance' for numerical answers.
 func (a *Answer) SetOption(option, value string) {
 	a.options[option] = value
@@ -42,7 +42,7 @@ func (a *Answer) SetOption(option, value string) {
 
 // GetOption retrieves the given option from a.
 // If option has not been explicitly set, the return value isSet will be false.
-func (a *Answer) GetOptions(option string) (value string, isSet bool) {
+func (a *Answer) GetOption(option string) (value string, isSet bool) {
 	v, ok := a.options[option]
 	return v, ok
 }
