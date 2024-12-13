@@ -2,11 +2,9 @@ package moodle
 
 import "strings"
 
-func htmlEscape(s string) string {
-	if strings.Contains(s, "svg") || strings.Contains(s, "<p>") {
-		return s
-	}
-
+// EscapeMath ensures that LaTeX math is not interpreted as HTML code when
+// imported into Moodle.
+func EscapeMath(s string) string {
 	replacements := [...][2]string{
 		{`[`, `&#91`},
 		{`]`, `&#93`},
