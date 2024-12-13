@@ -17,7 +17,7 @@ type Answer struct {
 // NewAnswer creates a new Answer object.
 func NewAnswer(response string, grade float64) *Answer {
 	return &Answer{
-		text:     htmlEscape(response),
+		text:     response,
 		grade:    grade,
 		feedback: "",
 		options:  make(map[string]string),
@@ -27,9 +27,9 @@ func NewAnswer(response string, grade float64) *Answer {
 // NewAnswerWithFeedback creates a new Answer object with specific feedback.
 func NewAnswerWithFeedback(response string, grade float64, feedback string) *Answer {
 	return &Answer{
-		text:     htmlEscape(response),
+		text:     response,
 		grade:    grade,
-		feedback: htmlEscape(feedback),
+		feedback: feedback,
 		options:  make(map[string]string),
 	}
 }

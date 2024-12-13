@@ -33,7 +33,7 @@ func NewShortText(description string, points uint, answers []*Answer) *ShortText
 	return &ShortText{
 		name:          fmt.Sprintf("%X", hash.Sum32()),
 		points:        points,
-		text:          htmlEscape(description),
+		text:          description,
 		answers:       answers,
 		caseSensitive: false,
 	}

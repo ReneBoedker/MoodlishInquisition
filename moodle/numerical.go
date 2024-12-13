@@ -32,7 +32,7 @@ func NewNumerical(description string, points uint, answers []*Answer) *Numerical
 	return &Numerical{
 		name:    fmt.Sprintf("%X", hash.Sum32()),
 		points:  points,
-		text:    htmlEscape(description),
+		text:    description,
 		answers: answers,
 	}
 }

@@ -32,7 +32,7 @@ func NewMultiChoice(description string, points uint, answers []*Answer) *MultiCh
 	return &MultiChoice{
 		name:    fmt.Sprintf("%X", hash.Sum32()),
 		points:  points,
-		text:    htmlEscape(description),
+		text:    description,
 		answers: answers,
 	}
 }
