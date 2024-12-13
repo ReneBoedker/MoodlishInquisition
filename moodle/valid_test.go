@@ -49,14 +49,14 @@ func TestOutputValid(t *testing.T) {
 	}
 }
 
-func TestHtmlEscape(t *testing.T) {
+func TestEscapeMath(t *testing.T) {
 	testCases := [...][2]string{
 		{`$$(0,2\pi]$$`, `$$(0,2\pi&#93$$`},
 		{`$$5<7$$`, `$$5\lt 7$$`},
 		{`$$3>1$$`, `$$3\gt 1$$`},
 	}
 	for _, v := range testCases {
-		if s := htmlEscape(v[0]); s != v[1] {
+		if s := EscapeMath(v[0]); s != v[1] {
 			t.Fatalf("Received %q, but expected %q", s, v[1])
 		}
 	}
