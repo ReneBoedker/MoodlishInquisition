@@ -3,7 +3,7 @@ package unif
 
 import (
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 )
 
 // IntInInterval generates a uniformly random integer in [a,b].
@@ -13,7 +13,7 @@ func IntInInterval(a, b int, allowZero bool) int {
 		panic(fmt.Errorf("Cannot generate integer in empty interval [%d, %d]", a, b))
 	}
 	for {
-		tmp := a + rand.Intn(b-a+1)
+		tmp := a + rand.IntN(b-a+1)
 		if allowZero || tmp != 0 {
 			return tmp
 		}
