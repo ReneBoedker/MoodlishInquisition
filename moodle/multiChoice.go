@@ -90,7 +90,6 @@ func (mc *MultiChoice) ToXml(w io.Writer) {
 	}
 
 	// Write remaining options
-	fmt.Fprintf(w, "\n<shuffleanswers>1</shuffleanswers>")
 	fmt.Fprintf(w, "\n<single>%t</single>", mc.NCorrect() == 1)
 	fmt.Fprintf(w, "\n<answernumbering>none</answernumbering>")
 }
