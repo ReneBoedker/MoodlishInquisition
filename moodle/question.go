@@ -8,4 +8,5 @@ import (
 type Question interface {
 	ToXml(io.Writer)
 	MoodleName() string
+	SetShuffleAnswers(bool)
 }

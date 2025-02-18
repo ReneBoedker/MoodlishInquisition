@@ -29,6 +29,7 @@ type DropText struct {
 	name    string
 	text    string
 	points  uint
+	shuffle bool
 	markers []*TextMark
 }
 
@@ -46,6 +47,7 @@ func NewDropText(description string, points uint, markers []*TextMark) *DropText
 		name:    fmt.Sprintf("%X", hash.Sum32()),
 		text:    description,
 		points:  points,
+		shuffle: true,
 		markers: markers,
 	}
 }
@@ -53,6 +55,12 @@ func NewDropText(description string, points uint, markers []*TextMark) *DropText
 // MoodleName returns the question type as written in Moodle.
 func (dt *DropText) MoodleName() string {
 	return "Drag and drop into text"
+}
+
+// SetShuffleAnswers allows enabling or disabling shuffling of answers. The
+// default is to shuffle.
+func (dt *DropText) SetShuffleAnswers(b bool) {
+	dt.shuffle = b
 }
 
 // ToXml writes a DropText object to Moodle XML format.
@@ -68,11 +76,15 @@ func (dt *DropText) ToXml(w io.Writer) {
 	<questiontext format="html">
 		<text><![CDATA[`+"%s"+`]]></text>
 	</questiontext>
-	<defaultgrade>`+"%d"+`</defaultgrade>
-	<shuffleanswers/>`,
+	<defaultgrade>`+"%d"+`</defaultgrade>`,
 		dt.name, dt.text, dt.points)
 	defer fmt.Fprint(w, `
 </question>`)
+
+	if dt.shuffle {
+		fmt.Fprintf(w, `
+	<shuffleanswers/>`)
+	}
 
 	// Write markers
 	for _, v := range dt.markers {

@@ -45,6 +45,11 @@ func (q *ShortText) SetCaseSensitivity(b bool) {
 	q.caseSensitive = b
 }
 
+// SetShuffleAnswers allows enabling or disabling shuffling of answers. This has
+// no effect for 'Short Answer' question types.
+func (q *ShortText) SetShuffleAnswers(b bool) {
+}
+
 // ToXml writes a ShortText object to Moodle XML format.
 // Note that this XML cannot be imported into Moodle on its own. It should be
 // included in a QuestionBank to do so.

@@ -59,6 +59,7 @@ type DropMarker struct {
 	text    string
 	file    string // base64-encoded
 	points  uint
+	shuffle bool
 	markers []*Mark
 	zones   []*Zone
 }
@@ -76,6 +77,7 @@ func NewDropMarker(description, file string, points uint, markers []*Mark, zones
 		text:    description,
 		file:    file,
 		points:  points,
+		shuffle: true,
 		markers: markers,
 		zones:   zones,
 	}
@@ -84,6 +86,12 @@ func NewDropMarker(description, file string, points uint, markers []*Mark, zones
 // MoodleName returns the question type as written in Moodle.
 func (dm *DropMarker) MoodleName() string {
 	return "Drag and drop markers"
+}
+
+// SetShuffleAnswers allows enabling or disabling shuffling of answers. The
+// default is to shuffle.
+func (dm *DropMarker) SetShuffleAnswers(b bool) {
+	dm.shuffle = b
 }
 
 // ToXml writes a DropMarker object to Moodle XML format.
@@ -100,12 +108,16 @@ func (dm *DropMarker) ToXml(w io.Writer) {
 		<text><![CDATA[`+"%s"+`]]></text>
 	</questiontext>
 	<defaultgrade>`+"%d"+`</defaultgrade>
-	<shuffleanswers/>
 	<showmisplaced/>
 	<file name="figure.svg" encoding="base64">%s</file>`,
 		dm.name, dm.text, dm.points, dm.file)
 	defer fmt.Fprint(w, `
 </question>`)
+
+	if dm.shuffle {
+		fmt.Fprintf(w, `
+	<shuffleanswers/>`)
+	}
 
 	// Write the drag markers
 	for i, v := range dm.markers {

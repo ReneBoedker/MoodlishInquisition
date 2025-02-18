@@ -37,6 +37,11 @@ func NewNumerical(description string, points uint, answers []*Answer) *Numerical
 	}
 }
 
+// SetShuffleAnswers allows enabling or disabling shuffling of answers. This has
+// no effect for Numerical question types.
+func (q *Numerical) SetShuffleAnswers(b bool) {
+}
+
 // ToXml writes a Numerical object to Moodle XML format.
 // Note that this XML cannot be imported into Moodle on its own. It should be
 // included in a QuestionBank to do so.
