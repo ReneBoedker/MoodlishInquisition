@@ -1,3 +1,4 @@
+// Package unif provides functions to simplify generation of random values.
 package unif
 
 import (

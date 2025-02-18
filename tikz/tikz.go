@@ -1,3 +1,9 @@
+// Package tikz enables inclusion of TikZ pictures in generated questions.
+//
+// The package relies on external tools to perform the compilation and
+// conversion. More precisely, pdflatex and pdf2svg must be installed for the
+// functions to succeed. If cropping of figures is requested, the package will
+// call Inkscape.
 package tikz
 
 import (
