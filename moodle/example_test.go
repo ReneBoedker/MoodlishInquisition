@@ -1,11 +1,15 @@
 package moodle_test
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/ReneBoedker/MoodlishInquisition/moodle"
 )
 
+// This simple example shows how to create a question bank containing a single
+// question. The question has one correct answer (giving 100% of the available
+// points).
 func Example() {
 	mc := moodle.NewMultiChoice(
 		"What is your quest?",
@@ -53,4 +57,10 @@ func Example() {
 	// <answernumbering>none</answernumbering>
 	// </question>
 	// </quiz>
+}
+
+func ExampleEscapeMath() {
+	fmt.Println(moodle.EscapeMath("$$x<5$$"))
+	// Output:
+	// $$x\lt 5$$
 }
