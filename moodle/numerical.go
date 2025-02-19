@@ -66,5 +66,5 @@ func (q *Numerical) ToXml(w io.Writer) {
 	}
 
 	// Write remaining options
-	fmt.Fprint(w, "\n<unitgradingtype>0</unitgradingtype>")
+	fmt.Fprint(w, "\n\t<unitgradingtype>0</unitgradingtype>")
 }

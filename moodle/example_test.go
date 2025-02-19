@@ -245,3 +245,56 @@ func ExampleNewShortText() {
 	// <usecase>0</usecase>
 	// </question>
 }
+
+func ExampleNewNumerical() {
+	trueAns := "354431007"
+	q0 := moodle.NewAnswerWithFeedback(trueAns, 100, "Spot on!")
+	q0.SetOption("tolerance", "0")
+
+	qWeek := moodle.NewAnswerWithFeedback(trueAns, 75, "Great! Less than a week off.")
+	qWeek.SetOption("tolerance", "604800")
+
+	qYear := moodle.NewAnswerWithFeedback(trueAns, 25, "Well, at least it's less than a year off.")
+	qYear.SetOption("tolerance", "31536000")
+
+	question := moodle.NewNumerical(
+		"The Olympic final of men's Hide-and-Seek between Francisco Huron and "+
+			"Don Roberts resulted in a tie. What was their time (in seconds)?",
+		1,
+		[]*moodle.Answer{q0, qWeek, qYear},
+	)
+
+	question.ToXml(os.Stdout)
+	// Output:
+	// 	<question type="numerical">
+	// 	<name>
+	// 		<text>58A9DE15</text>
+	// 	</name>
+	// 	<questiontext format="html">
+	// 		<text><![CDATA[The Olympic final of men's Hide-and-Seek between Francisco Huron and Don Roberts resulted in a tie. What was their time (in seconds)?]]></text>
+	// 	</questiontext>
+	// 	<defaultgrade>1</defaultgrade>
+	// 	<answer fraction="100.000000">
+	// 		<text><![CDATA[354431007]]></text>
+	// 		<feedback format="html">
+	// 			<text><![CDATA[Spot on!]]></text>
+	// 		</feedback>
+	// 		<tolerance>0</tolerance>
+	// 	</answer>
+	// 	<answer fraction="75.000000">
+	// 		<text><![CDATA[354431007]]></text>
+	// 		<feedback format="html">
+	// 			<text><![CDATA[Great! Less than a week off.]]></text>
+	// 		</feedback>
+	// 		<tolerance>604800</tolerance>
+	// 	</answer>
+	// 	<answer fraction="25.000000">
+	// 		<text><![CDATA[354431007]]></text>
+	// 		<feedback format="html">
+	// 			<text><![CDATA[Well, at least it's less than a year off.]]></text>
+	// 		</feedback>
+	// 		<tolerance>31536000</tolerance>
+	// 	</answer>
+	// 	<unitgradingtype>0</unitgradingtype>
+	// </question>
+}

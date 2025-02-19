@@ -1,4 +1,8 @@
 # Question types
+The sections below show the question types from Moodle that are supported by the MoodlishInquisition library.
+
+For question types where examples images are shown, the source code for generating the question may be found in [the package documentation](https://pkg.go.dev/github.com/ReneBoedker/MoodlishInquisition).
+
 ## Drag and drop into text
 This question type is implemented in the `DropText` type.
 
@@ -15,7 +19,10 @@ This question type is implemented in the `MultiChoice` type. If there are more t
 ![Moodle rendering a 'Multiple choice' question](exampleImages/multichoice.png)
 
 ## Numerical
-This question type is implemented in the `Numerical` type.
+This question type is implemented in the `Numerical` type. To set answer tolerances, use the `SetOptions` method of the `Answer` type.
+Handling of units is currently not supported.
+
+![Moodle rendering a 'Numerical' question](exampleImages/numerical.png)
 
 ## Short Answer
 This question is implemented in the `ShortText` type.
