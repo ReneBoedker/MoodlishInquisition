@@ -43,7 +43,7 @@ func Example() {
 	// 		<text><![CDATA[What is your quest?]]></text>
 	// 	</questiontext>
 	// 	<defaultgrade>1</defaultgrade>
-	// 	<shuffleanswers/>
+	// 	<shuffleanswers>1</shuffleanswers>
 	// 	<answer fraction="100.000000">
 	// 		<text><![CDATA[To seek the Holy Grail]]></text>
 	// 	</answer>

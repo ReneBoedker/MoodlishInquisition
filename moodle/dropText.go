@@ -83,7 +83,10 @@ func (dt *DropText) ToXml(w io.Writer) {
 
 	if dt.shuffle {
 		fmt.Fprintf(w, `
-	<shuffleanswers/>`)
+	<shuffleanswers>1</shuffleanswers>`)
+	} else {
+		fmt.Fprintf(w, `
+	<shuffleanswers>0</shuffleanswers>`)
 	}
 
 	// Write markers

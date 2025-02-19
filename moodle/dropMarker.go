@@ -116,7 +116,10 @@ func (dm *DropMarker) ToXml(w io.Writer) {
 
 	if dm.shuffle {
 		fmt.Fprintf(w, `
-	<shuffleanswers/>`)
+	<shuffleanswers>1</shuffleanswers>`)
+	} else {
+		fmt.Fprintf(w, `
+	<shuffleanswers>0</shuffleanswers>`)
 	}
 
 	// Write the drag markers

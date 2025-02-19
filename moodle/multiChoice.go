@@ -80,7 +80,10 @@ func (mc *MultiChoice) ToXml(w io.Writer) {
 
 	if mc.shuffle {
 		fmt.Fprintf(w, `
-	<shuffleanswers/>`)
+	<shuffleanswers>1</shuffleanswers>`)
+	} else {
+		fmt.Fprintf(w, `
+	<shuffleanswers>0</shuffleanswers>`)
 	}
 
 	// Several correct answers
