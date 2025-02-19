@@ -24,4 +24,4 @@ This question is implemented in the `ShortText` type.
 
 For this type of question, it would be common to add specific feedback for partially correct answers. This is possible via the `NewAnswerWithFeedback` function.
 
-![Specific feedback for partially correct answer](examplesImages/shortTextFeedback.png)
+![Specific feedback for partially correct answer](exampleImages/shortTextFeedback.png)
