@@ -64,3 +64,54 @@ func ExampleEscapeMath() {
 	// Output:
 	// $$x\lt 5$$
 }
+
+func ExampleNewDropText() {
+	description := `In Latin, &ldquo;Romans go home&rdquo; is [[1]] [[3]] [[5]]`
+	markers := []*moodle.TextMark{
+		moodle.NewTextMark("Romani", 0, false),
+		moodle.NewTextMark("Romanes", 0, false),
+		moodle.NewTextMark("ite", 1, false),
+		moodle.NewTextMark("eunt", 1, false),
+		moodle.NewTextMark("domum", 2, false),
+		moodle.NewTextMark("domus", 2, false),
+	}
+
+	question := moodle.NewDropText(description, 1, markers)
+
+	question.ToXml(os.Stdout)
+	// Output:
+	// 	<question type="ddwtos">
+	// 	<name>
+	// 		<text>F56B8CB8</text>
+	// 	</name>
+	// 	<questiontext format="html">
+	// 		<text><![CDATA[In Latin, &ldquo;Romans go home&rdquo; is [[1]] [[3]] [[5]]]]></text>
+	// 	</questiontext>
+	// 	<defaultgrade>1</defaultgrade>
+	// 	<shuffleanswers>1</shuffleanswers>
+	// 	<dragbox>
+	// 		<text>Romani</text>
+	// 		<group>1</group>
+	// 	</dragbox>
+	// 	<dragbox>
+	// 		<text>Romanes</text>
+	// 		<group>1</group>
+	// 	</dragbox>
+	// 	<dragbox>
+	// 		<text>ite</text>
+	// 		<group>2</group>
+	// 	</dragbox>
+	// 	<dragbox>
+	// 		<text>eunt</text>
+	// 		<group>2</group>
+	// 	</dragbox>
+	// 	<dragbox>
+	// 		<text>domum</text>
+	// 		<group>3</group>
+	// 	</dragbox>
+	// 	<dragbox>
+	// 		<text>domus</text>
+	// 		<group>3</group>
+	// 	</dragbox>
+	// </question>
+}

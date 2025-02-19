@@ -155,6 +155,7 @@ func cropSvg(fileName string) error {
 	return nil
 }
 
+// inkscapeVersion extracts the version number of Inkscape (if installed)
 func inkscapeVersion() ([]uint64, error) {
 	cmd := exec.Command("inkscape", "--version")
 	out, err := cmd.Output()
