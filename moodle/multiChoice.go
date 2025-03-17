@@ -39,7 +39,7 @@ func NewMultiChoice(description string, points uint, answers []*Answer) *MultiCh
 	}
 }
 
-// NCorrect counts the number of correct (incl. partially) answers in q.
+// NCorrect counts the number of correct (incl. partially) answers in mc.
 func (mc *MultiChoice) NCorrect() (n uint) {
 	for _, a := range mc.answers {
 		if a.grade > 0 {
@@ -49,7 +49,7 @@ func (mc *MultiChoice) NCorrect() (n uint) {
 	return n
 }
 
-// GetDescription returns the description (i.e. the question text) of q.
+// GetDescription returns the description (i.e. the question text) of mc.
 func (mc *MultiChoice) GetDescription() string {
 	return mc.text
 }

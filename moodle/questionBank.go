@@ -45,6 +45,7 @@ func (qb *QuestionBank) ToXml(w io.Writer) {
 // GenerateQuestionBank is the main function for generating random questions.
 // It generates the specified number of questions and writes it to the given
 // file (after creating it).
+// An error is returned if the file already exists.
 func GenerateQuestionBank(fName string, nQuestions int, gen func() Question) error {
 	// Check that file does not exist
 	if fileExists(fName) {
@@ -61,10 +62,6 @@ func GenerateQuestionBank(fName string, nQuestions int, gen func() Question) err
 	}
 	qb := NewQuestionBank(fName, questions)
 
-	// Export to file
-	if fileExists(fName) {
-		return fmt.Errorf("File %q already exists", fName)
-	}
 	f, err := os.Create(fName)
 	if err != nil {
 		return err
@@ -84,6 +81,7 @@ func validateSyntax(q Question) error {
 	return nil
 }
 
+// validateTeX is currently not used
 func validateTeX(s string) error {
 	matches := reMathDelims.FindAllStringSubmatch(s, -1)
 	for _, v := range matches {
