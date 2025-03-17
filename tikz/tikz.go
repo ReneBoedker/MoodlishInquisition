@@ -197,7 +197,7 @@ func svgToHtml(path string) (string, error) {
 	imgBytes = regexp.MustCompile(`<svg`).ReplaceAll(imgBytes, []byte(`<svg class="img-responsive"`))
 
 	fmt.Fprintf(&b, "%s", imgBytes)
-	fmt.Fprint(&b, "</p>\n<p>")
+	fmt.Fprint(&b, "</p>\n")
 	return b.String(), nil
 }
 
