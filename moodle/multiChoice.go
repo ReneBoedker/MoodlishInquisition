@@ -10,11 +10,12 @@ var _ Question = (*MultiChoice)(nil) // Ensure interface is satisfied
 
 // MultiChoice implements the 'Multiple choice' question type.
 type MultiChoice struct {
-	name    string
-	points  uint
-	shuffle bool
-	text    string
-	answers []*Answer
+	name          string
+	points        uint
+	shuffle       bool
+	forceMultiple bool
+	text          string
+	answers       []*Answer
 }
 
 // MoodleName returns the question type as written in Moodle.
@@ -60,6 +61,13 @@ func (mc *MultiChoice) SetShuffleAnswers(b bool) {
 	mc.shuffle = b
 }
 
+// ForceAllowMultiple makes it possible to allow multiple answers, even if only
+// a single answer is correct. By default, multiple answers will only be allowed
+// when multiple (partially or fully) correct answers exist.
+func (mc *MultiChoice) ForceAllowMultiple(b bool) {
+	mc.forceMultiple = b
+}
+
 // ToXml writes a MultiChoice object to Moodle XML format.
 // Note that this XML cannot be imported into Moodle on its own. It should be
 // included in a QuestionBank to do so.
@@ -86,13 +94,11 @@ func (mc *MultiChoice) ToXml(w io.Writer) {
 	<shuffleanswers>0</shuffleanswers>`)
 	}
 
-	// Several correct answers
-	// One wrong answer will cancel out one correct answer
 	for _, a := range mc.answers {
 		a.ToXml(w)
 	}
 
 	// Write remaining options
-	fmt.Fprintf(w, "\n<single>%t</single>", mc.NCorrect() == 1)
+	fmt.Fprintf(w, "\n<single>%t</single>", !mc.forceMultiple && mc.NCorrect() == 1)
 	fmt.Fprintf(w, "\n<answernumbering>none</answernumbering>")
 }
