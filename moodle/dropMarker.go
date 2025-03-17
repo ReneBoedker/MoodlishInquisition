@@ -35,6 +35,9 @@ type Zone struct {
 // Supported shapes are 'circle' and 'rectangle'. The given coordinates describe
 // the center of the zone. When defining a circle, its diameter will be
 // max(width, height).
+//
+// Note that coords should be specified in relation to the top left corner of
+// the image.
 func NewZone(shape string, coords [2]float64, width, height float64, correctMark int) (*Zone, error) {
 	var coordSpec string
 	shape = strings.ToLower(shape)
