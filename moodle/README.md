@@ -15,7 +15,7 @@ These questions contain an image onto which the markers are to be dropped. When 
 
 ## Multiple choice
 This question type is implemented in the `MultiChoice` type. If there is more than a single correct answer, the package will automatically switch between 'One answer only' and 'Multiple answers allowed'.
-If multiple answers should be allowed regardless of the number of correct answers, use the `ForceAllowMultiple' method.
+If multiple answers should be allowed regardless of the number of correct answers, use the `ForceAllowMultiple` method.
 
 ![Moodle rendering a 'Multiple choice' question](exampleImages/multichoice.png)
 

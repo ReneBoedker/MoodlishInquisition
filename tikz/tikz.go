@@ -2,8 +2,8 @@
 //
 // Pictures can either be compiled into two different formats depending on the
 // use case. For inclusion directly into question descriptions or answers, use
-// `CompileToHtml', which generates an SVG string that Moodle can render. For
-// inclusion in the `DropMarker' type question, use `CompileToBase64'.
+// CompileToHtml, which generates an SVG string that Moodle can render. For
+// inclusion in the DropMarker type question, use CompileToBase64.
 //
 // The package relies on external tools to perform the compilation and
 // conversion. More precisely, pdflatex and pdf2svg must be installed for the
