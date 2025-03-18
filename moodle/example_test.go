@@ -298,3 +298,87 @@ func ExampleNewNumerical() {
 	// 	<unitgradingtype>0</unitgradingtype>
 	// </question>
 }
+
+func ExampleNewDropMarker() {
+	// To produce the question in the example image, use the TikZ-code found in
+	// everest.tex. This must first be compiled to base64, using
+	//
+	// b64, dim, err := tikz.CompileToBase64(everest, 3.5, false, "")
+	//
+	// To keep the output short, this example substitutes the following dummy
+	// variables.
+	b64 := `Base64 encoded string`
+	dim := [2]float64{4, 3}
+
+	// Compute x- and y- coordinate scales (TikZ size is 4x3)
+	xScale := dim[0] / 4
+	yScale := dim[1] / 3
+
+	marks := []*moodle.Mark{
+		moodle.NewMark("Base Salon", 1),
+		moodle.NewMark("Mario's", 1),
+	}
+
+	// Coordinates in the TikZ-image are relative to bottom left corner. These
+	// must be converted to coordinates relative to top left corner.
+	coords := [][2]float64{
+		{xScale * 2.07, dim[1] - yScale*0.72}, // Base Salon at (2.07, 0.72)
+		{xScale * 2.27, dim[1] - yScale*2.42}, // Mario's at (2.27, 2.42)
+	}
+
+	zones := make([]*moodle.Zone, 2)
+	for i := range zones {
+		zones[i], _ = moodle.NewZone( // Ignoring error-handling for brevity
+			"circle",
+			coords[i],
+			xScale*0.4, // Allow some tolerance...
+			yScale*0.4, // ...in both x and y
+			i,          // Correct answer is the corresponding entry in the marks slice
+		)
+	}
+
+	question := moodle.NewDropMarker(
+		"Place the salons on the diagram of the International Hairdresser's Expedition to Mount Everest.",
+		b64,
+		1,
+		marks,
+		zones,
+	)
+
+	question.ToXml(os.Stdout)
+	// Output:
+	// <question type="ddmarker">
+	// 	<name>
+	// 		<text>AFB458E3</text>
+	// 	</name>
+	// 	<questiontext format="html">
+	// 		<text><![CDATA[Place the salons on the diagram of the International Hairdresser's Expedition to Mount Everest.]]></text>
+	// 	</questiontext>
+	// 	<defaultgrade>1</defaultgrade>
+	// 	<showmisplaced/>
+	// 	<file name="figure.svg" encoding="base64">Base64 encoded string</file>
+	// 	<shuffleanswers>1</shuffleanswers>
+	// 	<drag>
+	// 		<no>1</no>
+	// 		<text>Base Salon</text>
+	// 		<noofdrags>1</noofdrags>
+	// 	</drag>
+	// 	<drag>
+	// 		<no>2</no>
+	// 		<text>Mario's</text>
+	// 		<noofdrags>1</noofdrags>
+	// 	</drag>
+	// 	<drop>
+	// 		<no>1</no>
+	// 		<shape>circle</shape>
+	// 		<coords>2,2;0</coords>
+	// 		<choice>1</choice>
+	// 	</drop>
+	// 	<drop>
+	// 		<no>2</no>
+	// 		<shape>circle</shape>
+	// 		<coords>2,1;0</coords>
+	// 		<choice>2</choice>
+	// 	</drop>
+	// </question>
+}
