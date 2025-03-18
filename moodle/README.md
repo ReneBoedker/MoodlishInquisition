@@ -13,6 +13,8 @@ This question type is implemented in the `DropMarker` type.
 
 These questions contain an image onto which the markers are to be dropped. When creating one of these questions, the image must be base64 encoded. It is then bundled into the generated XML data.
 
+![Moodle rendering a 'Drag and drop markers' question](exampleImages/dropMarker.png)
+
 ## Multiple choice
 This question type is implemented in the `MultiChoice` type. If there is more than a single correct answer, the package will automatically switch between 'One answer only' and 'Multiple answers allowed'.
 If multiple answers should be allowed regardless of the number of correct answers, use the `ForceAllowMultiple` method.
