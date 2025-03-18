@@ -322,8 +322,8 @@ func ExampleNewDropMarker() {
 	// Coordinates in the TikZ-image are relative to bottom left corner. These
 	// must be converted to coordinates relative to top left corner.
 	coords := [][2]float64{
-		[2]float64{xScale * 2.07, dim[1] - yScale*0.72}, // Base Salon at (2.07, 0.72)
-		[2]float64{xScale * 2.27, dim[1] - yScale*2.42}, // Mario's at (2.27, 2.42)
+		{xScale * 2.07, dim[1] - yScale*0.72}, // Base Salon at (2.07, 0.72)
+		{xScale * 2.27, dim[1] - yScale*2.42}, // Mario's at (2.27, 2.42)
 	}
 
 	zones := make([]*moodle.Zone, 2)
