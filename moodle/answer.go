@@ -36,6 +36,8 @@ func NewAnswerWithFeedback(response string, grade float64, feedback string) *Ans
 
 // SetOption allows setting additional options for answers.
 // For instance, one may use this to set 'tolerance' for numerical answers.
+//
+// The function will not check if the specified option and its value are valid.
 func (a *Answer) SetOption(option, value string) {
 	a.options[option] = value
 }

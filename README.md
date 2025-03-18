@@ -4,8 +4,15 @@
 # Moodlish Inquisition
 Moodlish Inquisition is a package for generating questions and question banks that can be imported in Moodle.
 
+The package will for instance allow you to
+- Programmatically generate banks of questions
+- Generate graphics using TikZ, and include them in questions and answers
+- Use various question types such as multiple-choice, numerical, drop markers etc.
+
 ## Installation
 To use MoodlishInquisition, simply import the needed package in your go source code. Afterwards, run `go mod tidy` to fetch the packages.
+
+In order to use the TikZ-features, you need a working LaTeX-distribution as well as pdf2svg.
 
 ## Question types
 For a list of supported question types and examples, see the documentation of the `moodle` subpackage.
