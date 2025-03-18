@@ -34,6 +34,21 @@ func NewAnswerWithFeedback(response string, grade float64, feedback string) *Ans
 	}
 }
 
+// SetGrade sets the answer grade to the given value. It returns an error if
+// grade is not in the interval [-100, 100].
+func (a *Answer) SetGrade(grade float64) error {
+	if grade < -100 || grade > 100 {
+		return fmt.Errorf("Grade must be between")
+	}
+	a.grade = grade
+	return nil
+}
+
+// GetGrade returns the current grade of the answer.
+func (a *Answer) GetGrade() float64 {
+	return a.grade
+}
+
 // SetOption allows setting additional options for answers.
 // For instance, one may use this to set 'tolerance' for numerical answers.
 //
