@@ -50,6 +50,24 @@ func (mc *MultiChoice) NCorrect() (n uint) {
 	return n
 }
 
+// BalanceGrades automatically scales answer grades to match the number of
+// correct answers. That is, if n questions currently have a positive grade,
+// this function will change their grades to 100/n.
+// If withPenalty is set, incorrect answers will be given grade -100/n.
+// Otherwise, they will be left unchanged
+func (mc *MultiChoice) BalanceGrades(withPenalty bool) {
+	n := float64(mc.NCorrect())
+	for i, v := range mc.answers {
+		if v.grade > 0 {
+			mc.answers[i].grade = 100 / n
+			continue
+		}
+		if withPenalty {
+			mc.answers[i].grade = -100 / n
+		}
+	}
+}
+
 // GetDescription returns the description (i.e. the question text) of mc.
 func (mc *MultiChoice) GetDescription() string {
 	return mc.text
