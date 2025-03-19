@@ -79,6 +79,11 @@ func SvgFromTikz(s string, crop bool, tmpDir string) (*SvgImage, error) {
 	}, nil
 }
 
+// GetDimension returns the width and height of img as encoded in the svg file.
+func (img *SvgImage) GetDimension() [2]float64 {
+	return img.dim
+}
+
 // Scale changes the size of img by the given scaling factor. An error is
 // returned if factor is not positive.
 func (img *SvgImage) Scale(factor float64) error {
