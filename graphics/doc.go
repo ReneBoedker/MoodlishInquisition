@@ -10,7 +10,7 @@
 // inclusion in the DropMarker type question, use CompileToBase64.
 //
 // The package relies on external tools to perform the compilation and
-// conversion of TikZ graphics. More precisely, pdflatex and pdf2svg must be
-// installed for the functions to succeed. If cropping of figures is requested,
-// the package will call Inkscape.
+// conversion of TikZ graphics. More precisely, pdflatex and either pdftocairo
+// or pdf2svg must be installed for the functions to succeed. If cropping of
+// figures is requested, the package will call Inkscape.
 package graphics

@@ -152,9 +152,9 @@ func compileToSvg(s string, crop bool, dir string) (string, error) {
 	}
 
 	// Convert file to svg
-	cmd = exec.Command("pdf2svg", filepath.Join(dir, "tikz.pdf"), filepath.Join(dir, "tikz.svg"))
-	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("pdf2svg: %v", err)
+	err := pdf2svg(filepath.Join(dir, "tikz.pdf"), filepath.Join(dir, "tikz.svg"))
+	if err != nil {
+		return "", err
 	}
 
 	// Crop unnecessary space around figure if requested
@@ -166,6 +166,26 @@ func compileToSvg(s string, crop bool, dir string) (string, error) {
 	}
 
 	return filepath.Join(dir, "tikz.svg"), nil
+}
+
+func pdf2svg(pdfPath, destination string) error {
+	var err1, err2 error
+	cmd := exec.Command("pdftocairo", "-svg", pdfPath, destination)
+	if err1 = cmd.Run(); err1 == nil {
+		// pdftocairo succeeded; no need to continue
+		return nil
+	}
+
+	cmd = exec.Command("pdf2svg", pdfPath, destination)
+	if err2 = cmd.Run(); err2 != nil {
+		return fmt.Errorf(
+			"Both pdftocairo and pdf2svg failed. Error messages were:"+
+				"\tpdftocairo: %s\n\tpdf2svg: %s",
+			err1, err2,
+		)
+	}
+
+	return nil
 }
 
 func (img *SvgImage) Filetype() string {
