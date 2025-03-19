@@ -305,7 +305,7 @@ func ExampleNewDropMarker() {
 	// everest.tex and compile it using SvgFromTikz in the graphics subpackage.
 	// To keep the output short, this example substitutes a dummy image and
 	// dimension.
-	img := graphics.ImageFromBytes([]byte(`Example`), "svg")
+	img, _ := graphics.ImageFromBytes([]byte(`Example`), "svg")
 	dim := [2]float64{396.9, 297.6}
 
 	// Compute x- and y- coordinate scales (TikZ size is 4x3)

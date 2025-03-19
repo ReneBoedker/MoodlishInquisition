@@ -39,7 +39,7 @@ func TestOutputValid(t *testing.T) {
 
 	d := xml.NewDecoder(strings.NewReader(b.String()))
 	for {
-		err := d.Decode(new(interface{}))
+		err := d.Decode(new(any))
 		if err != nil {
 			if err == io.EOF {
 				return
