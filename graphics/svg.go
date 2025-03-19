@@ -19,6 +19,8 @@ type SvgImage struct {
 	dim     [2]float64
 }
 
+var _ Image = (*SvgImage)(nil) // Ensure that interface is satisfied
+
 //go:embed preamble.tex
 var preamble string
 
@@ -159,4 +161,8 @@ func compileToSvg(s string, crop bool, dir string) (string, error) {
 	}
 
 	return filepath.Join(dir, "tikz.svg"), nil
+}
+
+func (img *SvgImage) Filetype() string {
+	return "svg"
 }
