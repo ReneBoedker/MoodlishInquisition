@@ -26,6 +26,34 @@ var preamble string
 
 var svgDims = regexp.MustCompile(`((?:width|height)="([0-9.]+))(?:pt|px)?`)
 
+// SvgFromFile reads an svg file into memory.
+func SvgFromFile(path string) (*SvgImage, error) {
+	// Read svg contents into memory
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	// Extract width and height
+	w, h := 0.0, 0.0
+	matches := svgDims.FindAllSubmatch(content, 2)
+	for _, v := range matches {
+		if bytes.HasPrefix(v[0], []byte("width")) {
+			w, err = strconv.ParseFloat(string(v[2]), 0)
+		} else {
+			h, err = strconv.ParseFloat(string(v[2]), 0)
+		}
+	}
+	if w == 0 || h == 0 || err != nil {
+		return nil, fmt.Errorf("Failed to extract dimensions of svg.")
+	}
+
+	return &SvgImage{
+		content: content,
+		dim:     [2]float64{w, h},
+	}, nil
+}
+
 // SvgFromTikz compiles a TikZ- or pfgplots-environment into an SvgImage.
 // If argument crop is true, Inkscape will be used to crop the figure to its
 // contents. Intermediate results will be stored in tmpDir. If this argument is
@@ -53,30 +81,7 @@ func SvgFromTikz(s string, crop bool, tmpDir string) (*SvgImage, error) {
 		}
 	}
 
-	// Read svg contents into memory
-	content, err := os.ReadFile(svgPath)
-	if err != nil {
-		return nil, err
-	}
-
-	// Extract width and height
-	w, h := 0.0, 0.0
-	matches := svgDims.FindAllSubmatch(content, 2)
-	for _, v := range matches {
-		if bytes.HasPrefix(v[0], []byte("width")) {
-			w, err = strconv.ParseFloat(string(v[2]), 0)
-		} else {
-			h, err = strconv.ParseFloat(string(v[2]), 0)
-		}
-	}
-	if w == 0 || h == 0 || err != nil {
-		return nil, fmt.Errorf("Failed to extract dimensions of svg.")
-	}
-
-	return &SvgImage{
-		content: content,
-		dim:     [2]float64{w, h},
-	}, nil
+	return SvgFromFile(svgPath)
 }
 
 // GetDimension returns the width and height of img as encoded in the svg file.
@@ -97,9 +102,9 @@ func (img *SvgImage) Scale(factor float64) error {
 	matches := svgDims.FindAllSubmatch(img.content, 2)
 	for _, v := range matches {
 		if bytes.HasPrefix(v[0], []byte("width")) {
-			img.content = bytes.Replace(img.content, v[0], []byte(fmt.Sprintf(`width="%.1fpx`, img.dim[0])), 1)
+			img.content = bytes.Replace(img.content, v[0], fmt.Appendf([]byte{}, `width="%.1fpx`, img.dim[0]), 1)
 		} else {
-			img.content = bytes.Replace(img.content, v[0], []byte(fmt.Sprintf(`height="%.1fpx`, img.dim[1])), 1)
+			img.content = bytes.Replace(img.content, v[0], fmt.Appendf([]byte{}, `height="%.1fpx`, img.dim[1]), 1)
 		}
 	}
 
