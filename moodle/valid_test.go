@@ -8,27 +8,51 @@ import (
 )
 
 func exampleBank() *QuestionBank {
-	q1 := NewMultiChoice(
-		`$$f(t)=\int \cos(x)\, dx$$`,
-		5,
-		[]*Answer{
-			NewAnswer("True", 100),
-			NewAnswer("False", 0),
-		},
-	)
-	q2 := NewMultiChoice(
-		`$$x^2 + x = 0$$`,
-		6,
-		[]*Answer{
-			NewAnswer("$$x=0$$", 100),
-			NewAnswer("$$x=-1", 100),
-			NewAnswer("$$x=4", 0),
-		},
+	questions := make([]Question, 0)
+
+	questions = append(questions,
+		NewMultiChoice(
+			`$$f(t)=\int \cos(x)\, dx$$`,
+			5,
+			[]*Answer{
+				NewAnswer("True", 100),
+				NewAnswer("False", 0),
+			},
+		))
+
+	questions = append(questions,
+		NewDropText(
+			`He is [[2]]`,
+			1,
+			[]*TextMark{
+				NewTextMark("the Messiah", 0, false),
+				NewTextMark("a very naughty boy", 0, true),
+			},
+		))
+
+	questions = append(questions,
+		NewShortText(
+			`He is&hellip;`,
+			1,
+			[]*Answer{
+				NewAnswer("the Messiah", 0),
+				NewAnswer("a very naught boy", 100),
+			},
+		))
+
+	piAns := NewAnswer("3.14", 100)
+	piAns.SetOption("tolerance", "0")
+	questions = append(questions,
+		NewNumerical(
+			`What is \(\pi\) rounded to two decimal places?`,
+			1,
+			[]*Answer{piAns},
+		),
 	)
 
 	return &QuestionBank{
 		name:      "Testing",
-		questions: []Question{q1, q2},
+		questions: questions,
 	}
 }
 
