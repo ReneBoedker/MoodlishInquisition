@@ -68,7 +68,7 @@ func SvgFromTikz(s string, tmpDir string) (*SvgImage, error) {
 		defer os.RemoveAll(tmpDir)
 	}
 
-	svgPath, err := compileToSvg(s, false, tmpDir)
+	svgPath, err := compileToSvg(s, tmpDir)
 	if err != nil {
 		return nil, err
 	}
@@ -167,7 +167,7 @@ func (img *SvgImage) ToBase64(w io.Writer) {
 	fmt.Fprint(w, base64.StdEncoding.EncodeToString(b64Content))
 }
 
-func compileToSvg(s string, crop bool, dir string) (string, error) {
+func compileToSvg(s string, dir string) (string, error) {
 	// Wrap tikzpicture in TeX-document
 	var b strings.Builder
 	fmt.Fprint(&b, preamble)
@@ -186,14 +186,6 @@ func compileToSvg(s string, crop bool, dir string) (string, error) {
 	err := pdf2svg(filepath.Join(dir, "tikz.pdf"), filepath.Join(dir, "tikz.svg"))
 	if err != nil {
 		return "", err
-	}
-
-	// Crop unnecessary space around figure if requested
-	if crop {
-		err := cropSvg(filepath.Join(dir, "tikz.svg"))
-		if err != nil {
-			return "", err
-		}
 	}
 
 	return filepath.Join(dir, "tikz.svg"), nil
