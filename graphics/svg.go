@@ -55,11 +55,10 @@ func SvgFromFile(path string) (*SvgImage, error) {
 }
 
 // SvgFromTikz compiles a TikZ- or pfgplots-environment into an SvgImage.
-// If argument crop is true, Inkscape will be used to crop the figure to its
-// contents. Intermediate results will be stored in tmpDir. If this argument is
-// "", then a temporary folder will be created and deleted automatically. If
-// tmpDir is specified, the called is responsible for deletion.
-func SvgFromTikz(s string, crop bool, tmpDir string) (*SvgImage, error) {
+// Intermediate results will be stored in tmpDir. If this argument is "", then
+// a temporary folder will be created and deleted automatically. If tmpDir is
+// specified, the called is responsible for deletion.
+func SvgFromTikz(s string, tmpDir string) (*SvgImage, error) {
 	if tmpDir == "" {
 		var err error
 		tmpDir, err = os.MkdirTemp("", "moodleTikz-*")
@@ -72,13 +71,6 @@ func SvgFromTikz(s string, crop bool, tmpDir string) (*SvgImage, error) {
 	svgPath, err := compileToSvg(s, false, tmpDir)
 	if err != nil {
 		return nil, err
-	}
-
-	if crop {
-		err = cropSvg(svgPath)
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	return SvgFromFile(svgPath)
@@ -107,6 +99,40 @@ func (img *SvgImage) Scale(factor float64) error {
 			img.content = bytes.Replace(img.content, v[0], fmt.Appendf([]byte{}, `height="%.1fpx`, img.dim[1]), 1)
 		}
 	}
+
+	return nil
+}
+
+// CropToContent will crop the image size to match the svg contents.
+func (img *SvgImage) CropToContent() error {
+	// Create temporary folder
+	tmpDir, err := os.MkdirTemp("", "moodleTikz-*")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(tmpDir)
+
+	// Write image to disk
+	path := filepath.Join(tmpDir, "tmp.svg")
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	file.Write(img.content)
+	file.Close()
+
+	// Perform cropping
+	err = cropSvg(path)
+	if err != nil {
+		return err
+	}
+
+	// Overwrite image contents with cropped image
+	cropped, err := SvgFromFile(file.Name())
+	if err != nil {
+		return err
+	}
+	img = cropped
 
 	return nil
 }

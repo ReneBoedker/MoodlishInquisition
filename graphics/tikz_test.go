@@ -12,9 +12,9 @@ import (
 var example string
 
 func TestSvgCompilation(t *testing.T) {
-	img, err := SvgFromTikz(example, false, "")
+	img, err := SvgFromTikz(example, "")
 	if err != nil {
-		t.Fatalf("SvgFromTikz (without cropping) encountered error: %v", err)
+		t.Fatalf("SvgFromTikz encountered error: %v", err)
 	}
 
 	err = img.Scale(2)
@@ -22,17 +22,17 @@ func TestSvgCompilation(t *testing.T) {
 		t.Fatalf("Scaling svg encountered error: %v", err)
 	}
 
-	_, err = SvgFromTikz(example, true, "")
+	err = img.CropToContent()
 	if err != nil {
-		t.Logf("SvgFromTikz (with cropping) encountered error: %v", err)
+		t.Fatalf("Cropping encountered error: %v", err)
 	}
 }
 
 // Test that HTML output is valid HTML
 func TestHtmlValid(t *testing.T) {
-	img, err := SvgFromTikz(example, false, "")
+	img, err := SvgFromTikz(example, "")
 	if err != nil {
-		t.Fatalf("SvgFromTikz (without cropping) encountered error: %v", err)
+		t.Fatalf("SvgFromTikz encountered error: %v", err)
 	}
 
 	var b strings.Builder
