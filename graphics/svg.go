@@ -132,7 +132,7 @@ func (img *SvgImage) CropToContent() error {
 	if err != nil {
 		return err
 	}
-	img = cropped
+	*img = *cropped
 
 	return nil
 }
