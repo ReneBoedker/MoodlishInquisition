@@ -191,6 +191,8 @@ func compileToSvg(s string, dir string) (string, error) {
 	return filepath.Join(dir, "tikz.svg"), nil
 }
 
+// pdf2svg will automatically call either pdftocairo or pdf2svg to convert given
+// pdf file.
 func pdf2svg(pdfPath, destination string) error {
 	var err1, err2 error
 	cmd := exec.Command("pdftocairo", "-svg", pdfPath, destination)
@@ -211,6 +213,7 @@ func pdf2svg(pdfPath, destination string) error {
 	return nil
 }
 
+// Filetype returns the file type of img (i.e. "svg").
 func (img *SvgImage) Filetype() string {
 	return "svg"
 }
