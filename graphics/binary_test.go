@@ -4,7 +4,6 @@ import (
 	"bytes"
 	_ "embed"
 	"encoding/xml"
-	"fmt"
 	"io"
 	"testing"
 )
@@ -22,7 +21,6 @@ func TestBinaryInputs(t *testing.T) {
 	}
 
 	for i, v := range tests {
-		fmt.Println(v.extension)
 		img, err := ImageFromBytes(v.content, v.extension)
 		if err != nil {
 			t.Fatalf("Creating image produced error: %s", err)
