@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ReneBoedker/MoodlishInquisition/graphics"
 	"github.com/ReneBoedker/MoodlishInquisition/moodle"
 )
 
@@ -301,14 +302,11 @@ func ExampleNewNumerical() {
 
 func ExampleNewDropMarker() {
 	// To produce the question in the example image, use the TikZ-code found in
-	// everest.tex. This must first be compiled to base64, using
-	//
-	// b64, dim, err := tikz.CompileToBase64(everest, 3.5, false, "")
-	//
-	// To keep the output short, this example substitutes the following dummy
-	// variables.
-	b64 := `Base64 encoded string`
-	dim := [2]float64{4, 3}
+	// everest.tex and compile it using SvgFromTikz in the graphics subpackage.
+	// To keep the output short, this example substitutes a dummy image and
+	// dimension.
+	img, _ := graphics.ImageFromBytes([]byte(`Example`), "svg")
+	dim := [2]float64{396.9, 297.6}
 
 	// Compute x- and y- coordinate scales (TikZ size is 4x3)
 	xScale := dim[0] / 4
@@ -339,7 +337,7 @@ func ExampleNewDropMarker() {
 
 	question := moodle.NewDropMarker(
 		"Place the salons on the diagram of the International Hairdresser's Expedition to Mount Everest.",
-		b64,
+		img,
 		1,
 		marks,
 		zones,
@@ -349,14 +347,14 @@ func ExampleNewDropMarker() {
 	// Output:
 	// <question type="ddmarker">
 	// 	<name>
-	// 		<text>AFB458E3</text>
+	// 		<text>2204E2FF</text>
 	// 	</name>
 	// 	<questiontext format="html">
 	// 		<text><![CDATA[Place the salons on the diagram of the International Hairdresser's Expedition to Mount Everest.]]></text>
 	// 	</questiontext>
 	// 	<defaultgrade>1</defaultgrade>
 	// 	<showmisplaced/>
-	// 	<file name="figure.svg" encoding="base64">Base64 encoded string</file>
+	// 	<file name="figure.svg" encoding="base64">RXhhbXBsZQ==</file>
 	// 	<shuffleanswers>1</shuffleanswers>
 	// 	<drag>
 	// 		<no>1</no>
@@ -371,13 +369,13 @@ func ExampleNewDropMarker() {
 	// 	<drop>
 	// 		<no>1</no>
 	// 		<shape>circle</shape>
-	// 		<coords>2,2;0</coords>
+	// 		<coords>205,226;20</coords>
 	// 		<choice>1</choice>
 	// 	</drop>
 	// 	<drop>
 	// 		<no>2</no>
 	// 		<shape>circle</shape>
-	// 		<coords>2,1;0</coords>
+	// 		<coords>225,58;20</coords>
 	// 		<choice>2</choice>
 	// 	</drop>
 	// </question>

@@ -1,3 +1,5 @@
+[![Go Reference](https://pkg.go.dev/badge/github.com/ReneBoedker/MoodlishInquisition/moodle.svg)](https://pkg.go.dev/github.com/ReneBoedker/MoodlishInquisition/moodle)
+
 # Question types
 The sections below show the question types from Moodle that are supported by the MoodlishInquisition library.
 

@@ -5,6 +5,8 @@ import (
 	"hash/fnv"
 	"io"
 	"strings"
+
+	"github.com/ReneBoedker/MoodlishInquisition/graphics"
 )
 
 var _ Question = (*DropMarker)(nil) // Ensure interface is satisfied
@@ -60,7 +62,7 @@ func NewZone(shape string, coords [2]float64, width, height float64, correctMark
 type DropMarker struct {
 	name    string
 	text    string
-	file    string // base64-encoded
+	img     graphics.Image
 	points  uint
 	shuffle bool
 	markers []*Mark
@@ -70,15 +72,15 @@ type DropMarker struct {
 // NewDropMarker creates a new 'Drag and drop marker' question.
 // The 'file' argument must be a string containing the base64 encoded contents
 // of the question image.
-func NewDropMarker(description, file string, points uint, markers []*Mark, zones []*Zone) *DropMarker {
+func NewDropMarker(description string, img graphics.Image, points uint, markers []*Mark, zones []*Zone) *DropMarker {
 	hash := fnv.New32a()
 	hash.Write([]byte(description))
-	hash.Write([]byte(file))
+	img.ToBase64(hash)
 
 	return &DropMarker{
 		name:    fmt.Sprintf("%X", hash.Sum32()),
 		text:    description,
-		file:    file,
+		img:     img,
 		points:  points,
 		shuffle: true,
 		markers: markers,
@@ -112,8 +114,10 @@ func (dm *DropMarker) ToXml(w io.Writer) {
 	</questiontext>
 	<defaultgrade>`+"%d"+`</defaultgrade>
 	<showmisplaced/>
-	<file name="figure.svg" encoding="base64">%s</file>`,
-		dm.name, dm.text, dm.points, dm.file)
+	<file name="figure.%s" encoding="base64">`,
+		dm.name, dm.text, dm.points, dm.img.Filetype())
+	dm.img.ToBase64(w)
+	fmt.Fprint(w, `</file>`)
 	defer fmt.Fprint(w, `
 </question>`)
 

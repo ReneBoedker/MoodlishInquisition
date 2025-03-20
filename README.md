@@ -12,7 +12,7 @@ The package will for instance allow you to
 ## Installation
 To use MoodlishInquisition, simply import the needed package in your go source code. Afterwards, run `go mod tidy` to fetch the packages.
 
-In order to use the TikZ-features, you need a working LaTeX-distribution as well as [pdf2svg](https://cityinthesky.co.uk/opensource/pdf2svg/).
+In order to use the TikZ-features, you need a working LaTeX-distribution as well as either [pdftocairo](https://manpages.ubuntu.com/manpages/noble/en/man1/pdftocairo.1.html) or [pdf2svg](https://cityinthesky.co.uk/opensource/pdf2svg/).
 
 ## Question types
 For a list of supported question types and examples, see the documentation of the `moodle` subpackage.
