@@ -23,7 +23,8 @@ func TestBinaryInputs(t *testing.T) {
 	for i, v := range tests {
 		img, err := ImageFromBytes(v.content, v.extension)
 		if err != nil {
-			t.Fatalf("Creating image produced error: %s", err)
+			t.Errorf("Creating image produced error: %s", err)
+			continue
 		}
 
 		if i == 0 {
@@ -40,8 +41,20 @@ func TestBinaryInputs(t *testing.T) {
 				if err == io.EOF {
 					break
 				}
-				t.Fatalf("Decoding XML output produced error: %s", err)
+				t.Errorf("Decoding XML output produced error: %s", err)
 			}
 		}
+	}
+}
+
+func TestMismatchedInputs(t *testing.T) {
+	_, err := ImageFromBytes([]byte("test"), "gif")
+	if err == nil {
+		t.Errorf("Non-image file failed to return an error")
+	}
+
+	_, err = ImageFromBytes(pngExample, "jpeg")
+	if err == nil {
+		t.Errorf("Mismatched file type failed to return an error")
 	}
 }
