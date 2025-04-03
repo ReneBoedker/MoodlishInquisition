@@ -15,7 +15,7 @@ var pngExample []byte
 var jpegExample []byte
 
 func TestBinaryInputs(t *testing.T) {
-	tests := []*binaryImage{
+	tests := []*BinaryImage{
 		{content: pngExample, extension: "png"},
 		{content: jpegExample, extension: "jpeg"},
 	}
