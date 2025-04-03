@@ -9,22 +9,22 @@ import (
 	"strings"
 )
 
-type binaryImage struct {
+type BinaryImage struct {
 	content   []byte
 	extension string
 	alt       string
 }
 
-var _ Image = (*binaryImage)(nil) // Ensure that interface is satisfied
+var _ Image = (*BinaryImage)(nil) // Ensure that interface is satisfied
 
 // ImageFromFile reads an image file into memory. An error is returned if
 // filePath does not exist.
-func ImageFromFile(path string) (*binaryImage, error) {
+func ImageFromFile(path string) (*BinaryImage, error) {
 	content, err := fileAsBytes(path)
 
 	ext := filepath.Ext(path)
 
-	return &binaryImage{
+	return &BinaryImage{
 		content:   content,
 		extension: strings.TrimPrefix(ext, "."),
 	}, err
@@ -35,7 +35,7 @@ func ImageFromFile(path string) (*binaryImage, error) {
 // file type. A simple sanity-check is performed, and an error is returned if
 // the check fails. However, an image object with the specified content is
 // produced regardless of the error value.
-func ImageFromBytes(b []byte, filetype string) (*binaryImage, error) {
+func ImageFromBytes(b []byte, filetype string) (*BinaryImage, error) {
 	var err error
 	mime := http.DetectContentType(b)
 	if !strings.HasPrefix(mime, "image/") {
@@ -44,7 +44,7 @@ func ImageFromBytes(b []byte, filetype string) (*binaryImage, error) {
 		err = fmt.Errorf("Warning: File seems to be %s, not %s", ext, filetype)
 	}
 
-	return &binaryImage{
+	return &BinaryImage{
 		content:   b,
 		extension: strings.TrimPrefix(filetype, "."),
 	}, err
@@ -52,19 +52,19 @@ func ImageFromBytes(b []byte, filetype string) (*binaryImage, error) {
 
 // SetAltDescription allows given string to be used as the 'alt' attribute when
 // converting to HTML.
-func (img *binaryImage) SetAltDescription(s string) {
+func (img *BinaryImage) SetAltDescription(s string) {
 	img.alt = s
 }
 
 // Filetype returns the filetype of img.
-func (img *binaryImage) Filetype() string {
+func (img *BinaryImage) Filetype() string {
 	return img.extension
 }
 
 // ToHtml embeds img in Moodle-ready HTML and writes it to w.
 // This should be used with care, especially with large image files, as they
 // will be included directly in the HTML code.
-func (img *binaryImage) ToHtml(w io.Writer) {
+func (img *BinaryImage) ToHtml(w io.Writer) {
 	fmt.Fprintf(w, `<img src="data:image/%s;base64,`, img.Filetype())
 
 	img.ToBase64(w)
@@ -79,6 +79,6 @@ func (img *binaryImage) ToHtml(w io.Writer) {
 // ToBase64 encodes img to base64 format.
 // This is for instance used to include graphics in the 'Drag and drop markers'
 // question type.
-func (img *binaryImage) ToBase64(w io.Writer) {
+func (img *BinaryImage) ToBase64(w io.Writer) {
 	fmt.Fprint(w, base64.StdEncoding.EncodeToString(img.content))
 }
