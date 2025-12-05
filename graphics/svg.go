@@ -184,9 +184,9 @@ func (img *SvgImage) ToBase64(w io.Writer) {
 	fmt.Fprint(w, base64.StdEncoding.EncodeToString(b64Content))
 }
 
-// compileToSvg compiles a multipage TikZ-picture into individual SVG files.
-// The output is a slice containing the path of each file.
-func compileToSvg(s string, dir string) ([]string, error) {
+// compileToPdf compiles a TikZ-picture into a PDF file.
+// The output is the path of the resulting file.
+func compileToPdf(s string, dir string) (string, error) {
 	// Wrap tikzpicture in TeX-document
 	var b strings.Builder
 	fmt.Fprint(&b, preamble)
@@ -198,11 +198,22 @@ func compileToSvg(s string, dir string) ([]string, error) {
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = strings.NewReader(b.String())
 	if err := cmd.Run(); err != nil {
-		return nil, fmt.Errorf("pdflatex: %v", err)
+		return "", fmt.Errorf("pdflatex: %v", err)
+	}
+
+	return filepath.Join(dir, "tikz.pdf"), nil
+}
+
+// compileToSvg compiles a multipage TikZ-picture into individual SVG files.
+// The output is a slice containing the path of each file.
+func compileToSvg(s string, dir string) ([]string, error) {
+	pdfPath, err := compileToPdf(s, dir)
+	if err != nil {
+		return nil, err
 	}
 
 	// Convert file to svg
-	err := pdf2svg(filepath.Join(dir, "tikz.pdf"), filepath.Join(dir, "tikz.svg"))
+	err = convertPdfToSvg(pdfPath, filepath.Join(dir, "tikz.svg"))
 	if err != nil {
 		return nil, err
 	}
@@ -210,43 +221,61 @@ func compileToSvg(s string, dir string) ([]string, error) {
 	return filepath.Glob(filepath.Join(dir, "tikz*.svg"))
 }
 
-// pdf2svg will automatically call either pdftocairo or pdf2svg to convert given
+// convertPdfToSvg will automatically call either pdftocairo or pdf2svg to convert given
 // pdf file.
-func pdf2svg(pdfPath, destination string) error {
-	var err1, err2 error
-
-	// Prefer pdftocairo if available. This requires knowledge of the number of
-	// pages in the PDF.
-	nPages, err1 := pdfPageCount(pdfPath)
-
+func convertPdfToSvg(pdfPath, destination string) error {
+	err1 := pdftocairo(pdfPath, destination)
 	if err1 == nil {
-		for i := 1; i <= nPages; i++ {
-			cmd := exec.Command(
-				"pdftocairo",
-				"-svg",
-				"-f", fmt.Sprintf("%d", i),
-				"-l", fmt.Sprintf("%d", i),
-				pdfPath,
-				strings.Replace(destination, ".svg", fmt.Sprintf("%02d.svg", i), 1))
-			if err1 = cmd.Run(); err1 != nil {
-				break
-			}
-		}
-	}
-
-	if err1 == nil {
-		// None of the pdftocairo runs returned an error; no need to try pdf2svg
+		// pdftocairo succeeded; no need to try pdf2svg
 		return nil
 	}
 
-	// pdftocairo cannot be used; try pdf2svg instead
-	cmd := exec.Command("pdf2svg", pdfPath, destination, "all")
-	if err2 = cmd.Run(); err2 != nil {
+	err2 := pdf2svg(pdfPath, destination)
+	if err2 != nil {
+		return fmt.Errorf("%s\n%s", err1, err2)
+	}
+
+	return nil
+}
+
+// pdftocairo calls the external command of the same name to convert a PDF to SVG.
+// It will convert every page into separate SVG files.
+func pdftocairo(pdfPath, destination string) error {
+	nPages, err := pdfPageCount(pdfPath)
+	if err != nil {
 		return fmt.Errorf(
-			"Both pdftocairo and pdf2svg failed. Error messages were:"+
-				"\tpdftocairo: %s\n\tpdf2svg: %s",
-			err1, err2,
+			"pdfinfo failed, so pdftocairo cannot be used. Error message was: %s",
+			err,
 		)
+	}
+
+	for i := 1; i <= nPages; i++ {
+		cmd := exec.Command(
+			"pdftocairo",
+			"-svg",
+			"-f", fmt.Sprintf("%d", i),
+			"-l", fmt.Sprintf("%d", i),
+			pdfPath,
+			strings.Replace(destination, ".svg", fmt.Sprintf("%02d.svg", i), 1))
+		if err = cmd.Run(); err != nil {
+			return fmt.Errorf("pdftocairo failed. Error message was: %s", err)
+		}
+	}
+
+	return nil
+}
+
+// pdf2svg calls the external command of the same name to convert a PDF to SVG.
+// It will convert every page into separate SVG files.
+func pdf2svg(pdfPath, destination string) error {
+	cmd := exec.Command(
+		"pdf2svg",
+		pdfPath,
+		strings.Replace(destination, ".svg", "%02d.svg", 1),
+		"all",
+	)
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("pdf2svg failed. Error message was: %s", err)
 	}
 
 	return nil
