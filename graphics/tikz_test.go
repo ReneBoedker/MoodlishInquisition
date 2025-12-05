@@ -55,7 +55,14 @@ func TestPdf2svg(t *testing.T) {
 	}
 
 	path, err := compileToPdf(exampleMulti, tmpDir)
+	if err != nil {
+		t.Fatalf("Failed to compile PDF: %s", err)
+	}
+
 	err = pdf2svg(path, filepath.Join(tmpDir, "tikz.svg"))
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	generatedFiles, _ := filepath.Glob(filepath.Join(tmpDir, "tikz*.svg"))
 	if len(generatedFiles) != 2 {
