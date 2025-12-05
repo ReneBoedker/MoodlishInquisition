@@ -59,6 +59,15 @@ func SvgFromFile(path string) (*SvgImage, error) {
 // a temporary folder will be created and deleted automatically. If tmpDir is
 // specified, the called is responsible for deletion.
 func SvgFromTikz(s string, tmpDir string) (*SvgImage, error) {
+	svg, err := SvgFromMultipageTikz(s, tmpDir)
+	if svg != nil {
+		return svg[0], err
+	}
+
+	return nil, err
+}
+
+func SvgFromMultipageTikz(s string, tmpDir string) ([]*SvgImage, error) {
 	if tmpDir == "" {
 		var err error
 		tmpDir, err = os.MkdirTemp("", "moodleTikz-*")
@@ -73,7 +82,15 @@ func SvgFromTikz(s string, tmpDir string) (*SvgImage, error) {
 		return nil, err
 	}
 
-	return SvgFromFile(svgPath)
+	svgs := make([]*SvgImage, len(svgPath), len(svgPath))
+	for i, v := range svgPath {
+		svgs[i], err = SvgFromFile(v)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return svgs, nil
 }
 
 // GetDimension returns the width and height of img as encoded in the svg file.
@@ -167,7 +184,9 @@ func (img *SvgImage) ToBase64(w io.Writer) {
 	fmt.Fprint(w, base64.StdEncoding.EncodeToString(b64Content))
 }
 
-func compileToSvg(s string, dir string) (string, error) {
+// compileToPdf compiles a TikZ-picture into a PDF file.
+// The output is the path of the resulting file.
+func compileToPdf(s string, dir string) (string, error) {
 	// Wrap tikzpicture in TeX-document
 	var b strings.Builder
 	fmt.Fprint(&b, preamble)
@@ -182,35 +201,107 @@ func compileToSvg(s string, dir string) (string, error) {
 		return "", fmt.Errorf("pdflatex: %v", err)
 	}
 
-	// Convert file to svg
-	err := pdf2svg(filepath.Join(dir, "tikz.pdf"), filepath.Join(dir, "tikz.svg"))
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(dir, "tikz.svg"), nil
+	return filepath.Join(dir, "tikz.pdf"), nil
 }
 
-// pdf2svg will automatically call either pdftocairo or pdf2svg to convert given
+// compileToSvg compiles a multipage TikZ-picture into individual SVG files.
+// The output is a slice containing the path of each file.
+func compileToSvg(s string, dir string) ([]string, error) {
+	pdfPath, err := compileToPdf(s, dir)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert file to svg
+	err = convertPdfToSvg(pdfPath, filepath.Join(dir, "tikz.svg"))
+	if err != nil {
+		return nil, err
+	}
+
+	return filepath.Glob(filepath.Join(dir, "tikz*.svg"))
+}
+
+// convertPdfToSvg will automatically call either pdftocairo or pdf2svg to convert given
 // pdf file.
-func pdf2svg(pdfPath, destination string) error {
-	var err1, err2 error
-	cmd := exec.Command("pdftocairo", "-svg", pdfPath, destination)
-	if err1 = cmd.Run(); err1 == nil {
-		// pdftocairo succeeded; no need to continue
+func convertPdfToSvg(pdfPath, destination string) error {
+	err1 := pdftocairo(pdfPath, destination)
+	if err1 == nil {
+		// pdftocairo succeeded; no need to try pdf2svg
 		return nil
 	}
 
-	cmd = exec.Command("pdf2svg", pdfPath, destination)
-	if err2 = cmd.Run(); err2 != nil {
-		return fmt.Errorf(
-			"Both pdftocairo and pdf2svg failed. Error messages were:"+
-				"\tpdftocairo: %s\n\tpdf2svg: %s",
-			err1, err2,
-		)
+	err2 := pdf2svg(pdfPath, destination)
+	if err2 != nil {
+		return fmt.Errorf("%s\n%s", err1, err2)
 	}
 
 	return nil
+}
+
+// pdftocairo calls the external command of the same name to convert a PDF to SVG.
+// It will convert every page into separate SVG files.
+func pdftocairo(pdfPath, destination string) error {
+	nPages, err := pdfPageCount(pdfPath)
+	if err != nil {
+		return fmt.Errorf(
+			"pdfinfo failed, so pdftocairo cannot be used. Error message was: %s",
+			err,
+		)
+	}
+
+	for i := 1; i <= nPages; i++ {
+		cmd := exec.Command(
+			"pdftocairo",
+			"-svg",
+			"-f", fmt.Sprintf("%d", i),
+			"-l", fmt.Sprintf("%d", i),
+			pdfPath,
+			strings.Replace(destination, ".svg", fmt.Sprintf("%02d.svg", i), 1))
+		if err = cmd.Run(); err != nil {
+			return fmt.Errorf("pdftocairo failed. Error message was: %s", err)
+		}
+	}
+
+	return nil
+}
+
+// pdf2svg calls the external command of the same name to convert a PDF to SVG.
+// It will convert every page into separate SVG files.
+func pdf2svg(pdfPath, destination string) error {
+	cmd := exec.Command(
+		"pdf2svg",
+		pdfPath,
+		strings.Replace(destination, ".svg", "%02d.svg", 1),
+		"all",
+	)
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("pdf2svg failed. Error message was: %s", err)
+	}
+
+	return nil
+}
+
+// pdfPageCount uses pdfinfo (part of poppler-utils) to extract page number.
+func pdfPageCount(pdfPath string) (int, error) {
+	var info strings.Builder
+	cmd := exec.Command("pdfinfo", pdfPath)
+	cmd.Stdout = &info
+	if err := cmd.Run(); err != nil {
+		return 0, err
+	}
+
+	pageStr := regexp.MustCompile(
+		`Pages:[[:space:]]*([0-9]+)`,
+	).FindStringSubmatch(info.String())
+
+	if len(pageStr) == 0 {
+		return 0, fmt.Errorf("Failed to extract number of PDF pages.")
+	}
+	i64, err := strconv.ParseInt(pageStr[1], 10, 0)
+	if err != nil {
+		return 0, err
+	}
+	return int(i64), nil
 }
 
 // Filetype returns the file type of img (i.e. "svg").
