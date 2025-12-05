@@ -64,6 +64,16 @@ func (a *Answer) GetOption(option string) (value string, isSet bool) {
 	return v, ok
 }
 
+// SetFeedback overwrites existing feedback with given string.
+func (a *Answer) SetFeedback(s string) {
+	a.feedback = s
+}
+
+// GetFeedback returns the current feedback of a.
+func (a *Answer) GetFeedback() string {
+	return a.feedback
+}
+
 // ToXml writes an Answer object to Moodle XML format.
 // Note that this XML cannot be imported into Moodle on its own. It should be
 // included in a QuestionBank to do so.
