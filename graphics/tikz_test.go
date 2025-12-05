@@ -11,6 +11,9 @@ import (
 //go:embed example.tex
 var example string
 
+//go:embed exampleMulti.tex
+var exampleMulti string
+
 func TestSvgCompilation(t *testing.T) {
 	img, err := SvgFromTikz(example, "")
 	if err != nil {
@@ -19,12 +22,26 @@ func TestSvgCompilation(t *testing.T) {
 
 	err = img.Scale(2)
 	if err != nil {
-		t.Fatalf("Scaling svg encountered error: %v", err)
+		t.Errorf("Scaling svg encountered error: %v", err)
 	}
 
 	err = img.CropToContent()
 	if err != nil {
-		t.Fatalf("Cropping encountered error: %v", err)
+		t.Errorf("Cropping encountered error: %v", err)
+	}
+}
+
+func TestMultipageSvg(t *testing.T) {
+	imgs, err := SvgFromMultipageTikz(exampleMulti, "")
+	if err != nil {
+		t.Fatalf("SvgFromMultipageTikz encountered error: %v", err)
+	}
+
+	if len(imgs) != 2 {
+		t.Errorf(
+			"SvgFromMultipageTikz produced %d images, but 2 were expected",
+			len(imgs),
+		)
 	}
 }
 
